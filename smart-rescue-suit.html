@@ -1,0 +1,876 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Rescue Wearable Suit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #050508;
+            --bg-panel: rgba(12, 16, 24, 0.85);
+            --primary-red: #ff2a2a;
+            --primary-blue: #00d4ff;
+            --text-main: #e0e0e0;
+            --text-muted: #8b94a5;
+            --font-head: 'Orbitron', sans-serif;
+            --font-body: 'Rajdhani', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+            --neon-red: 0 0 10px rgba(255,42,42,0.6), 0 0 20px rgba(255,42,42,0.4);
+            --neon-blue: 0 0 10px rgba(0,212,255,0.6), 0 0 20px rgba(0,212,255,0.4);
+            --border-tech: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Scanline Overlay */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0,0,0,0.2) 50%,
+                rgba(0,0,0,0.2)
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.5;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: var(--font-head);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .label {
+            font-family: var(--font-mono);
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            background: rgba(5, 5, 8, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: var(--border-tech);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+        }
+
+        .logo {
+            font-family: var(--font-head);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            text-shadow: var(--neon-red);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-blue);
+            text-shadow: var(--neon-blue);
+        }
+
+        .menu-toggle {
+            display: none;
+            color: var(--primary-blue);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 0 5%;
+            overflow: hidden;
+        }
+
+        /* Animated Grid Background */
+        .hero-bg {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: gridDrift 20s linear infinite;
+            z-index: -2;
+            transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px);
+            transform-origin: top center;
+        }
+
+        @keyframes gridDrift {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 40px; }
+        }
+
+        .hero-glow {
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(255,42,42,0.15) 0%, transparent 60%);
+            z-index: -1;
+            animation: pulseGlow 4s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(90deg, var(--primary-blue), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin-bottom: 3rem;
+            font-family: var(--font-mono);
+        }
+
+        .btn-cta {
+            padding: 15px 40px;
+            background: transparent;
+            color: var(--primary-blue);
+            font-family: var(--font-head);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-decoration: none;
+            border: none;
+            position: relative;
+            cursor: pointer;
+            transition: 0.3s;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0% 100%);
+            box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.5);
+            border: 1px solid var(--primary-blue);
+            text-transform: uppercase;
+        }
+
+        .btn-cta::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 212, 255, 0.1);
+            z-index: -1;
+            transition: 0.3s;
+        }
+
+        .btn-cta:hover {
+            color: #fff;
+            text-shadow: 0 0 5px #fff;
+        }
+
+        .btn-cta:hover::before {
+            background: var(--primary-blue);
+        }
+
+        /* LED Strip */
+        .led-strip {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #000, var(--primary-blue), var(--primary-red), var(--primary-blue), #000);
+            background-size: 200% 100%;
+            animation: ledFlow 3s linear infinite;
+            box-shadow: 0 0 15px var(--primary-blue);
+        }
+
+        @keyframes ledFlow {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* Sections General */
+        section {
+            padding: 100px 5%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: var(--text-main);
+        }
+
+        .section-title span {
+            color: var(--primary-red);
+            text-shadow: var(--neon-red);
+        }
+
+        /* About Section */
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: var(--border-tech);
+            padding: 3rem;
+            position: relative;
+            border-radius: 5px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: 0.4s;
+        }
+
+        .panel:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .panel::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0%; height: 2px;
+            background: var(--primary-blue);
+            transition: 0.4s;
+        }
+
+        .panel:hover::after {
+            width: 100%;
+        }
+
+        .panel h3 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Features Section */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            border-left: 3px solid var(--primary-red);
+            transition: 0.4s;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 42, 42, 0.05);
+            border-left-color: var(--primary-blue);
+        }
+
+        .feature-card h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .tech-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 5px 10px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid var(--primary-blue);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--primary-blue);
+        }
+
+        /* How It Works (Flow) */
+        .flow-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .flow-node {
+            background: var(--bg-panel);
+            border: var(--border-tech);
+            padding: 1rem 2rem;
+            text-align: center;
+            font-family: var(--font-head);
+            font-size: 1.1rem;
+            position: relative;
+            border-radius: 3px;
+        }
+
+        .flow-node::before {
+            content: '';
+            position: absolute;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border: 1px solid var(--primary-blue);
+            opacity: 0;
+            border-radius: 5px;
+            animation: nodePing 3s infinite;
+        }
+
+        .flow-node:nth-child(even)::before { animation-delay: 1.5s; }
+
+        @keyframes nodePing {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+
+        .flow-arrow {
+            color: var(--primary-red);
+            font-size: 2rem;
+            font-family: var(--font-mono);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        /* Components Grid */
+        .components-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .component-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            text-align: center;
+            font-family: var(--font-mono);
+            transition: 0.3s;
+        }
+
+        .component-item:hover {
+            border-color: var(--primary-blue);
+            box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.2);
+            color: var(--primary-blue);
+        }
+
+        /* System Architecture */
+        .architecture {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .arch-layer {
+            background: var(--bg-panel);
+            border: 1px dashed var(--primary-blue);
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .arch-layer h4 {
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .arch-layer p {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .arch-layer::after {
+            content: '▼';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary-red);
+        }
+        .arch-layer:last-child::after { display: none; }
+
+        /* Team & Contact */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .team-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .avatar {
+            width: 100px; height: 100px;
+            background: #111;
+            border: 2px solid var(--primary-blue);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-head);
+            font-size: 2rem;
+            color: rgba(255,255,255,0.2);
+        }
+
+        .contact-panel {
+            background: var(--bg-panel);
+            border: var(--border-tech);
+            padding: 3rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            transition: 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-red);
+            color: #fff;
+            font-family: var(--font-head);
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        .btn-submit:hover {
+            background: #d40000;
+            box-shadow: var(--neon-red);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #000;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .about-grid { grid-template-columns: 1fr; }
+            .menu-toggle { display: block; }
+            .nav-links {
+                position: fixed;
+                top: 70px; left: -100%;
+                flex-direction: column;
+                background: rgba(5, 5, 8, 0.95);
+                width: 100%; height: calc(100vh - 70px);
+                align-items: center;
+                justify-content: center;
+                transition: 0.4s;
+            }
+            .nav-links.active { left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <span style="color: var(--text-main);">ResQ</span><span style="color: var(--primary-blue);">Shield</span>
+        </div>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#about">About</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#advantages">Advantages</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="menu-toggle" id="menuToggle">☰</div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-glow"></div>
+        <h1 class="fade-in">Smart Rescue <br><span style="color:var(--text-main);">Wearable Suit</span></h1>
+        <p class="fade-in">Enhancing Safety in Emergency Rescue Operations with Advanced Sensor Telemetry and LoRa Communication.</p>
+        <a href="#about" class="btn-cta fade-in">View Project</a>
+        <div class="led-strip"></div>
+    </header>
+
+    <section id="about">
+        <h2 class="section-title fade-in">The <span>Mission</span></h2>
+        <div class="about-grid">
+            <div class="panel fade-in">
+                <h3><span style="color:var(--primary-red);">⚠</span> The Problem</h3>
+                <p>Firefighters and rescue personnel operate in extremely hazardous environments with high risks of structural collapse, toxic gas exposure, and sudden incapacitation. Traditional communication often fails in deep structures, leaving teams vulnerable without real-time physiological and environmental telemetry.</p>
+            </div>
+            <div class="panel fade-in">
+                <h3><span style="color:var(--primary-blue);">⛑</span> The Solution</h3>
+                <p>A sensor-integrated smart wearable suit designed to autonomously monitor environmental threats and rescuer movements. Utilizing a robust micro-controller and long-range (LoRa) communication, it ensures continuous data relay to command centers, even when standard networks fail.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="features">
+        <h2 class="section-title fade-in">Core <span>Features</span></h2>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <h4>Gas Detection</h4>
+                <p>Detects hazardous levels of LPG, natural gas, smoke, and carbon monoxide in real-time.</p>
+                <div class="tech-tag">MQ-2, MQ-5, MQ-7</div>
+            </div>
+            <div class="feature-card fade-in">
+                <h4>Motion & Fall Detection</h4>
+                <p>Continuous monitoring of rescuer orientation to immediately detect unexpected falls or immobility.</p>
+                <div class="tech-tag">MPU6050 (Gyro/Accel)</div>
+            </div>
+            <div class="feature-card fade-in">
+                <h4>Location Tracking</h4>
+                <p>Provides real-time location data to coordinate and locate personnel during large-scale emergency operations.</p>
+                <div class="tech-tag">Location Services</div>
+            </div>
+            <div class="feature-card fade-in">
+                <h4>LoRa Communication</h4>
+                <p>Transmits vital data over long distances without relying on cellular or Wi-Fi infrastructure.</p>
+                <div class="tech-tag">SX1278 (433MHz)</div>
+            </div>
+            <div class="feature-card fade-in">
+                <h4>Local Alert System</h4>
+                <p>Immediate haptic and auditory feedback for the wearer when danger thresholds are breached.</p>
+                <div class="tech-tag">Buzzer, Vibration, LED</div>
+            </div>
+            <div class="feature-card fade-in">
+                <h4>Real-time Processing</h4>
+                <p>High-speed data acquisition and edge-processing to minimize response latency.</p>
+                <div class="tech-tag">ESP32 Core</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="workflow" style="background: rgba(10,15,20,0.5);">
+        <h2 class="section-title fade-in">How It <span>Works</span></h2>
+        <div class="flow-diagram fade-in">
+            <div class="flow-node">Sensors<br><span class="label">Data Acquisition</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node">ESP32<br><span class="label">Processing</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node">Local Alerts<br><span class="label">Buzzer/Motor</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node">LoRa TX/RX<br><span class="label">Telemetry Relay</span></div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-node" style="border-color:var(--primary-red);">Command Center<br><span class="label">Monitoring UI</span></div>
+        </div>
+    </section>
+
+    <section id="architecture">
+        <h2 class="section-title fade-in">System <span>Architecture</span></h2>
+        <div class="architecture fade-in">
+            <div class="arch-layer">
+                <h4>Output Layer</h4>
+                <p>Control Center Dashboard / Web Interface / Local Audio-Visual Alerts</p>
+            </div>
+            <div class="arch-layer">
+                <h4>Communication Layer</h4>
+                <p>LoRa Transceiver (SX1278) / Wireless Data Link</p>
+            </div>
+            <div class="arch-layer">
+                <h4>Processing Layer</h4>
+                <p>ESP32 Microcontroller / Threshold Logic / Sensor Calibration</p>
+            </div>
+            <div class="arch-layer">
+                <h4>Sensor Layer</h4>
+                <p>Gas Sensors (MQ Series) / IMU (MPU6050) / Location Module</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="components">
+        <h2 class="section-title fade-in">Hardware <span>Components</span></h2>
+        <div class="components-list">
+            <div class="component-item fade-in">ESP32 Microcontroller</div>
+            <div class="component-item fade-in">MQ-2 Smoke Sensor</div>
+            <div class="component-item fade-in">MQ-5 LPG Sensor</div>
+            <div class="component-item fade-in">MQ-7 CO Sensor</div>
+            <div class="component-item fade-in">MPU6050 Accel/Gyro</div>
+            <div class="component-item fade-in">Location Tracking Module</div>
+            <div class="component-item fade-in">LoRa SX1278 Module</div>
+            <div class="component-item fade-in">Piezo Buzzer</div>
+            <div class="component-item fade-in">Vibration Motor</div>
+            <div class="component-item fade-in">LED Indicators</div>
+            <div class="component-item fade-in">LiPo Battery (3.7V)</div>
+            <div class="component-item fade-in">Custom PCB Board</div>
+        </div>
+    </section>
+
+    <section id="advantages" style="background: rgba(10,15,20,0.5);">
+        <h2 class="section-title fade-in">Advantages & <span>Applications</span></h2>
+        <div class="about-grid">
+            <div>
+                <h3 style="color:var(--primary-blue); font-family:var(--font-head); margin-bottom: 1.5rem;">Key Advantages</h3>
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <div class="feature-card fade-in" style="padding: 1rem;">Works Without Internet (LoRa Mesh)</div>
+                    <div class="feature-card fade-in" style="padding: 1rem;">Real-Time Threat Monitoring</div>
+                    <div class="feature-card fade-in" style="padding: 1rem;">Drastically Improves Rescuer Safety</div>
+                    <div class="feature-card fade-in" style="padding: 1rem;">Low Power Consumption for Extended Ops</div>
+                </div>
+            </div>
+            <div>
+                <h3 style="color:var(--primary-red); font-family:var(--font-head); margin-bottom: 1.5rem;">Target Applications</h3>
+                <div style="display:flex; flex-direction:column; gap:1rem;">
+                    <div class="feature-card fade-in" style="padding: 1rem; border-left-color:var(--primary-blue);">Firefighting Operations</div>
+                    <div class="feature-card fade-in" style="padding: 1rem; border-left-color:var(--primary-blue);">Disaster Management & Rubble Search</div>
+                    <div class="feature-card fade-in" style="padding: 1rem; border-left-color:var(--primary-blue);">Industrial Safety & Chemical Plants</div>
+                    <div class="feature-card fade-in" style="padding: 1rem; border-left-color:var(--primary-blue);">Underground Mining Operations</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="team">
+        <h2 class="section-title fade-in">Team <span>ResQShield</span></h2>
+        <div class="team-grid">
+            <div class="team-card fade-in">
+                <div class="avatar">SD</div>
+                <h3>SIVAHARI D</h3>
+                <div class="label" style="margin-top: 10px;">VISIONARY</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; text-align: left; color: var(--text-muted);">
+                    <strong>Role:</strong> Research & Development (R&D Engineer)<br><br>
+                    <ul style="padding-left: 20px;">
+                        <li>Study of rescue environment challenges (fire, gas, temperature)</li>
+                        <li>Selection of suitable sensors and technologies</li>
+                        <li>Analysis of system performance and improvements</li>
+                        <li>Documentation, research, and validation of results</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="team-card fade-in">
+                <div class="avatar">HR</div>
+                <h3>HARISHPANDIAN R</h3>
+                <div class="label" style="margin-top: 10px;">HUSTLER</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; text-align: left; color: var(--text-muted);">
+                    <strong>Role:</strong> Embedded & Communication Engineer<br><br>
+                    <ul style="padding-left: 20px;">
+                        <li>Programming ESP32</li>
+                        <li>Integration of LoRa communication module</li>
+                        <li>Data transmission and reception setup</li>
+                        <li>Implementation of alert logic (threshold detection)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="team-card fade-in">
+                <div class="avatar">DM</div>
+                <h3>DHARSHINI M</h3>
+                <div class="label" style="margin-top: 10px;">HACKER</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; text-align: left; color: var(--text-muted);">
+                    <strong>Role:</strong> Software & Testing Engineer<br><br>
+                    <ul style="padding-left: 20px;">
+                        <li>Development of monitoring interface/dashboard</li>
+                        <li>Data logging and basic analysis</li>
+                        <li>System testing and validation</li>
+                        <li>Debugging and performance improvement</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="team-card fade-in">
+                <div class="avatar">VR</div>
+                <h3>VIGNESH R</h3>
+                <div class="label" style="margin-top: 10px;">DESIGNER</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; text-align: left; color: var(--text-muted);">
+                    <strong>Role:</strong> Textile Design Engineer (Fabric Specialist)<br><br>
+                    <ul style="padding-left: 20px;">
+                        <li>Design and development of smart wearable suit system</li>
+                        <li>Selection of suitable fabric (heat-resistant, breathable)</li>
+                        <li>Design of suit structure and ergonomics</li>
+                        <li>Ensuring comfort, flexibility, and safety</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="team-card fade-in">
+                <div class="avatar">RR</div>
+                <h3>REENA R</h3>
+                <div class="label" style="margin-top: 10px;">HACKER</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; text-align: left; color: var(--text-muted);">
+                    <strong>Role:</strong> Hardware Engineer<br><br>
+                    <ul style="padding-left: 20px;">
+                        <li>Sensor selection, data acquisition, and calibration</li>
+                        <li>Collection of health and environmental data</li>
+                        <li>Circuit design and connection of sensors with ESP32</li>
+                        <li>Power system integration</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="team-card fade-in">
+                <div class="avatar">KV</div>
+                <h3>KEERTHI VASAN</h3>
+                <div class="label" style="margin-top: 10px;">DESIGNER</div>
+                <div style="margin-top: 15px; font-size: 0.9rem; text-align: left; color: var(--text-muted);">
+                    <strong>Role:</strong> Textile Design Engineer (Fabric Specialist)<br><br>
+                    <ul style="padding-left: 20px;">
+                        <li>Design and development of smart wearable suit system</li>
+                        <li>Selection of suitable fabric (heat-resistant, breathable)</li>
+                        <li>Design of suit structure and ergonomics</li>
+                        <li>Ensuring comfort, flexibility, and safety</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <h2 class="section-title fade-in">System <span>Inquiry</span></h2>
+        <div class="contact-panel fade-in">
+            <form>
+                <div class="form-group">
+                    <label class="label">Transmitter ID / Name</label>
+                    <input type="text" placeholder="Enter your designation...">
+                </div>
+                <div class="form-group">
+                    <label class="label">Secure Frequency / Email</label>
+                    <input type="email" placeholder="Enter secure comms email...">
+                </div>
+                <div class="form-group">
+                    <label class="label">Data Payload / Message</label>
+                    <textarea rows="5" placeholder="Transmit your message here..."></textarea>
+                </div>
+                <button type="button" class="btn-submit">Initiate Transmission</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <p>SYSTEM LOG: ALL SENSORS NOMINAL. © 2026 Smart Rescue Wearable Suit Project.</p>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const navLinks = document.getElementById('navLinks');
+
+        menuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+
+        // Close menu when link clicked
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+            });
+        });
+
+        // Scroll Animation Observer
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Optional: Stop observing after animation
+                    // observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Add subtle parallax to hero grid
+        document.addEventListener('mousemove', (e) => {
+            const heroBg = document.querySelector('.hero-bg');
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            heroBg.style.transform = `perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px) rotateY(${x}deg) rotateX(${60 - y}deg)`;
+        });
+    </script>
+</body>
+</html>

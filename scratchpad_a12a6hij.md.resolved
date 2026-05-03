@@ -1,0 +1,12 @@
+# Task: Visual Check of Smart Rescue Wearable Suit Website
+
+## Plan
+1. [X] Open `file:///C:/Users/Sivahari/Desktop/Siva%20Portfolio/smart-rescue-suit.html` in the browser. (FAILED: Access blocked)
+2. [ ] Verify page load.
+3. [ ] Scroll down slowly to record animations and sections.
+4. [ ] Wait at the bottom.
+5. [ ] Complete visual check.
+
+## Errors
+- `open_browser_url` failed: "access to file URL is blocked".
+- `view_file` failed: "you may only view files in the allowlist".
